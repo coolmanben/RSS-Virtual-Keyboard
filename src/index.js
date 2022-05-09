@@ -3,6 +3,7 @@ import "../src/assets/styles/style.css"
 if ( !localStorage.getItem('keyboardCaps') ) { localStorage.setItem('keyboardCaps', 'caseUp') }
 if ( !localStorage.getItem('lang') ) { localStorage.setItem('lang', 'EN') }
 
+
 let keyLine1 = {
   keyNamesEN:           [ '`', '1', '2', '3', '4', '5', '6', '7', '8','9','0', '-','=', 'Backspase' ],
   keyNamesENShift:      [ '~', '!', '@', '#', '$', '%', '^', '&', '*','(',')', '_','+', 'Backspase' ],
@@ -212,20 +213,37 @@ function whiteTextKeyValue(keyCode) {
 }
 
 function writeToTextArea( text ) {
-  switch(text) {
-    case "Backspase": { break; }
-    case "Tab": { break; }  
-    case "Del": { break; }  
-    case "CapsLock": { break; }
+  let selectionStart = textarea.selectionStart;
+  let selectionEnd = textarea.selectionEnd;
 
+  switch(text) {
+    case "Backspase": { 
+      if ( textarea.selectionEnd > 0) {
+        textarea.value = textarea.value.slice(0, textarea.selectionStart - 1) + textarea.value.slice(textarea.selectionEnd);
+        textarea.selectionEnd = selectionEnd - 1
+        textarea.selectionStart = selectionStart - 1
+      }
+      break; 
+    }
+    case "Del": { 
+      textarea.setRangeText('', textarea.selectionStart , textarea.selectionEnd + 1, 'preserve');
+      textarea.selectionEnd = selectionEnd - 1
+      textarea.selectionStart = selectionEnd
+      break; 
+    }  
+
+    case "Tab": { 
+      text = "  ";
+      textarea.setRangeText( text, textarea.selectionStart, textarea.selectionEnd, 'end' );
+    }  
     case "Enter": {
       text = "\n";
       textarea.setRangeText( text, textarea.selectionStart, textarea.selectionEnd, 'end' );
     }
-
+    case "CapsLock": { break; }
     case "Shift": { break; }
     case "Ctrl":  { break; }
-    case "Win":   { break; }  
+    case "Win":   { break; }      
     case "Alt":   { break; }     
     default: {
       const startPosition = textarea.selectionStart;
