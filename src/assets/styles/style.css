@@ -140,6 +140,11 @@ html.dark {
   background:#79aa89
 }
 
+.key.active {
+  background-color:#2cfd72;
+  border-radius: 20px;
+}
+
 .key .circle {
   position: absolute;
   background-color: #ffc600;
@@ -176,4 +181,10 @@ kbd {
 
 .hiden {
   display: none;
+}
+
+.description, .language, .title {
+  margin: 10px auto;
+  text-align: center;
+  font-size: 1.2rem;
 }
