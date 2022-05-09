@@ -11,7 +11,7 @@ let keyLine1 = {
 
   keyNamesRU:           [ 'ё', '1', '2', '3', '4', '5', '6', '7', '8','9','0', '-','=', 'Backspase' ],
   keyNamesRUShift:      [ 'Ё', '!', '"', '№', ';', '%', ':', '?', '*','(',')', '_','+', 'Backspase' ],
-  keyNamesRUCaps:       [ 'Ё', '!', '"', '№', ';', '%', ':', '?', '*','(',')', '_','+', 'Backspase' ],
+  keyNamesRUCaps:       [ 'ё', '1', '2', '3', '4', '5', '6', '7', '8','9','0', '-','=', 'Backspase' ],
   keyNamesRUCapshift:   [ 'Ё', '!', '"', '№', ';', '%', ':', '?', '*','(',')', '_','+', 'Backspase' ],
 
   keyDatas:             [ '192', '49', '50', '51', '52', '53', '54', '55', '56','57','48', '109','61', '8' ],
@@ -106,8 +106,8 @@ function createElement( name , container, classname, inner = '') {
 }
 
 function createKeysLine( lineObject , container, classname) {
-  const containerLineKeys = document.createElement('div') ;
-  containerLineKeys.className = classname ;
+  const containerLineKeys       = document.createElement('div') ;
+  containerLineKeys.className   = classname ;
   container.appendChild( containerLineKeys ) ;
 
   lineObject.keyNamesEN.forEach( function( element, index) {
@@ -115,12 +115,12 @@ function createKeysLine( lineObject , container, classname) {
     keyelement.setAttribute('data-key', lineObject.keyDatas[index])  
     keyelement.className = lineObject.keyClass[index];
     containerLineKeys.appendChild( keyelement );
-    let KeyEngContainerClassName = 'en hiden' 
-    let KeyRuContainerClassName = 'ru' 
+    let KeyEngContainerClassName    = 'en hiden' 
+    let KeyRuContainerClassName     = 'ru' 
 
     if ( localStorage.getItem('lang') == 'EN') {
-      KeyEngContainerClassName = 'en' 
-      KeyRuContainerClassName = 'ru hiden'
+      KeyEngContainerClassName      = 'en' 
+      KeyRuContainerClassName       = 'ru hiden'
     }
  
     const KeyEngContainer = createElement( 'span' , keyelement, KeyEngContainerClassName );
@@ -165,7 +165,6 @@ createKeysLine( keyLine5 , containerKeyboard, "keys");
 createElement( 'p', centralizer, "description", "Клавиатура создана в операционной системе Windows");
 createElement( 'p', centralizer, "language", "Для переключения языка комбинация: левыe ctrl + alt" );
 
-
 const buttonDark = document.querySelector('.buttonDark');
 
 buttonDark.addEventListener('click', (event) => {
@@ -191,26 +190,20 @@ const containerRU   = document.querySelectorAll('.ru');
 
 const keyCapsLock   = document.querySelector('.key-capslock');
 
-function whiteText( event ) {
-  whiteTextKeyValue(event.keyCode);
-}
-
-function inactive( event ) {
-  const key       = document.querySelector(`div[data-key="${event.keyCode}"]`);
-  key.classList.remove( 'active' ) 
-}
-
 function whiteTextKeyValue(keyCode) {
   const key       = document.querySelector(`div[data-key="${keyCode}"]`);
-  key.classList.add( 'active' )
   if ( !( key == null) ) {
     const keySpans  = key.childNodes
+    key.classList.add( 'active' )
     keySpans.forEach( keySpan => {
-      if ( !keySpan.classList.contains('hiden') )  {
+      
+      if ( !keySpan.classList.contains('hiden') ) {
         const keyKbds = keySpan.childNodes
         keyKbds.forEach( keyKbd => {
           if ( !keyKbd.classList.contains('hiden') ) {
-            writeToTextArea( keyKbd.innerHTML)
+               
+            writeToTextArea( keyKbd.innerHTML);
+            
           }
         })
       }
@@ -220,26 +213,16 @@ function whiteTextKeyValue(keyCode) {
 
 function writeToTextArea( text ) {
   switch(text) {
-
-    case "Backspase": { 
-      
-      break; }
-    case "Tab": {
-      
-      break;
-    }  
-
-    case "Del": {
-      
-      break;
-    }  
-
+    case "Backspase": { break; }
+    case "Tab": { break; }  
+    case "Del": { break; }  
     case "CapsLock": { break; }
 
     case "Enter": {
       text = "\n";
       textarea.setRangeText( text, textarea.selectionStart, textarea.selectionEnd, 'end' );
     }
+
     case "Shift": { break; }
     case "Ctrl":  { break; }
     case "Win":   { break; }  
@@ -247,29 +230,45 @@ function writeToTextArea( text ) {
     default: {
       const startPosition = textarea.selectionStart;
       const endPosition   = textarea.selectionEnd;
+      textarea.focus();
       textarea.setRangeText( text, textarea.selectionStart, textarea.selectionEnd, 'end' );
     }
   }
 }
 
-
 keys.forEach( key => {
   key.addEventListener( 'mousedown', (event) => {
+    event.preventDefault()
     let parrent = event.target.closest("div");
     let keyCode = parrent.getAttribute("data-key");
-
     whiteTextKeyValue(keyCode); 
   })
   key.addEventListener( 'mouseup', (event) => {
+    event.preventDefault()
     event.target.closest("div").classList.remove( 'active')
   })
 })
 
-window.addEventListener('keydown', whiteText );
+window.addEventListener('keyup', (event) => {
+  
+  if ( (event.code == 'CapsLock') ) {
+    
+  }
 
-window.addEventListener('keyup', inactive );
+  else if (event.code == 'ShiftLeft') {
+    shiftUp() 
+    const key       = document.querySelector(`div[data-key="${event.keyCode}"]`);
+    key.classList.remove( 'active' ) 
+  }
+
+  else {
+    const key       = document.querySelector(`div[data-key="${event.keyCode}"]`);
+    key.classList.remove( 'active' ) 
+  }
+});
 
 window.addEventListener('keydown', (event) => {
+  event.preventDefault()
   if (event.ctrlKey && event.altKey) {
     if ( localStorage.getItem('lang') == 'EN' ){
       hideKeys( containerEN )
@@ -282,44 +281,80 @@ window.addEventListener('keydown', (event) => {
       localStorage.setItem('lang', 'EN')
     }
   }
+  if (event.code == 'CapsLock' ) {
+    CapsLockKey()  
+    return
+  }
+
+  if (event.code == 'ShiftLeft' ) {
+    shiftDown()     
+  }
+  
+  whiteTextKeyValue(event.keyCode);
 })
 
 keyCapsLock.addEventListener( 'click', (event) => {
+  event.preventDefault()
+  CapsLockKey()
+})
+
+function CapsLockKey() {
   if ( localStorage.getItem('keyboardCaps') == 'caseUp' ) {
     hideKeys( caseUps )
     displayKeys( KeysCaps ) 
+    keyCapsLock.classList.add( 'active' )
     localStorage.setItem('keyboardCaps', 'caps')
   }
   else {
     displayKeys( caseUps )
     hideKeys( KeysCaps )
+    keyCapsLock.classList.remove( 'active' )
     localStorage.setItem('keyboardCaps', 'caseUp')
   }
-})
+}
+
+function shiftDown() {
+  if ( localStorage.getItem('keyboardCaps') == 'caseUp' ) {
+    hideKeys( caseUps )
+    displayKeys( KeysShifts )
+  }
+  else {
+    hideKeys( KeysCaps )
+    displayKeys( KeysCapShifts )
+  }
+}
+
+function shiftUp() {
+  if ( localStorage.getItem('keyboardCaps') == 'caseUp' ) {
+    displayKeys( caseUps )  
+    hideKeys( KeysShifts )   
+  }
+  else {
+    displayKeys( KeysCaps )  
+    hideKeys( KeysCapShifts )      
+  }
+}
+
 
 Shifts.forEach(Shift => {
   Shift.addEventListener( "mousedown", event => {
-    if ( localStorage.getItem('keyboardCaps') == 'caseUp' ) {
-      hideKeys( caseUps )
-      displayKeys( KeysShifts )
-    }
-    else {
-      hideKeys( KeysCaps )
-      displayKeys( KeysCapShifts )
-    }
+    shiftDown() 
   })
 
   Shift.addEventListener( "mouseup", event => {
-    if ( localStorage.getItem('keyboardCaps') == 'caseUp' ) {
-      displayKeys( caseUps )  
-      hideKeys( KeysShifts )   
-    }
-    else {
-      displayKeys( KeysCaps )  
-      hideKeys( KeysCapShifts )      
-    }
+    shiftUp()
   })
 })
+
+
+
+
+
+
+
+
+
+
 
 
 console.log("Максимальный балл за задание: 110\nминимальный набор:\nреализована генерация DOM-элементов и body в index.html пустой изначально (может находится только тег script): +20\nнажатие на кнопку на физической клавиатуре подсвечивает кнопку на виртуальной (проверять следует нажатие цифр, букв, знаков препинания, backspace, del (если она присутствует), enter, shift, alt, ctrl, tab, caps lock, space, стрелки вниз-вверх-влево-вправо): +5\n(не всё)\nстандартный набор:\nесть переключение между русским и английским языком (сочетание клавиш для переключения языка должно быть указано на странице с клавиатурой), а также сохранение выбранного языка: +15\nклики мышкой по кнопкам на виртуальной клавиатуре или нажатие на кнопки физической клавиатуры, выводят символы в инпут (textarea): +15\nдополнительный набор:\nреализована анимация нажатия на кнопку: +15\nтехнические требования:\nиспользование в коде фишек стандарта ES6 и выше (classes, деструктуризация и т.д.): +15\nиспользование eslint: +10\nтребования к репозиторию, коммитам и PR выполнены: +10\nИтоговая оценка: 105")
